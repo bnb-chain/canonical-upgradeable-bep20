@@ -1,2 +1,2 @@
-# bep20-upgradeable-template
-Implement upgradeable bep20 contract
+# Canonical-upgradeable-bep20
+Implement an upgradeable bep20 contract
