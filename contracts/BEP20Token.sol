@@ -11,10 +11,9 @@ contract BEP20Token is Context, IBEP20, Initializable {
     mapping (address => uint256) private _balances;
     mapping (address => mapping (address => uint256)) private _allowances;
     uint256 private _totalSupply;
-
-    string public constant _name = "ABC Token";
-    string public constant _symbol = "ABC";
-    uint8 public constant _decimals = 18;
+    string public _name;
+    string public _symbol;
+    uint8 public _decimals;
 
     address private _owner;
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
@@ -33,11 +32,12 @@ contract BEP20Token is Context, IBEP20, Initializable {
     /**
      * @dev sets initials supply and the owner
      */
-    function initialize() public initializer {
-        _owner = msg.sender;
-        _totalSupply = 10**8 * 10**18;
-        _balances[msg.sender] = _totalSupply;
-        emit Transfer(address(0), msg.sender, _totalSupply);
+    function initialize(string memory name, string memory symbol, uint8 decimals, uint256 amount) public initializer {
+        _owner = _msgSender();
+        _name = name;
+        _symbol = symbol;
+        _decimals = decimals;
+        _mint(_msgSender(), amount);
     }
 
     /**
