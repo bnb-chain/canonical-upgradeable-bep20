@@ -11,12 +11,14 @@ contract BEP20Token is Context, IBEP20, Initializable {
     mapping (address => uint256) private _balances;
     mapping (address => mapping (address => uint256)) private _allowances;
     uint256 private _totalSupply;
-    string public _name;
-    string public _symbol;
-    uint8 public _decimals;
+    string private _name;
+    string private _symbol;
+    uint8 private _decimals;
 
     address private _owner;
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+
+    bool private _mintable;
 
     constructor() public {
     }
@@ -32,11 +34,12 @@ contract BEP20Token is Context, IBEP20, Initializable {
     /**
      * @dev sets initials supply and the owner
      */
-    function initialize(string memory name, string memory symbol, uint8 decimals, uint256 amount) public initializer {
+    function initialize(string memory name, string memory symbol, uint8 decimals, uint256 amount, bool mintable) public initializer {
         _owner = _msgSender();
         _name = name;
         _symbol = symbol;
         _decimals = decimals;
+        _mintable = mintable;
         _mint(_msgSender(), amount);
     }
 
@@ -60,6 +63,13 @@ contract BEP20Token is Context, IBEP20, Initializable {
         require(newOwner != address(0), "Ownable: new owner is the zero address");
         emit OwnershipTransferred(_owner, newOwner);
         _owner = newOwner;
+    }
+
+    /**
+     * @dev Returns if the token is mintable or not
+     */
+    function mintable() external view returns (bool) {
+        return _mintable;
     }
 
     /**
@@ -197,8 +207,10 @@ contract BEP20Token is Context, IBEP20, Initializable {
      * Requirements
      *
      * - `msg.sender` must be the token owner
+     * - `_mintable` must be true
      */
     function mint(uint256 amount) public onlyOwner returns (bool) {
+        require(_mintable, "this token is not mintable");
         _mint(_msgSender(), amount);
         return true;
     }
