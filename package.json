@@ -13,7 +13,7 @@
     "lint:js": "eslint test/**/*.js",
     "lint:sol:fix": "solium -d contracts/ --fix",
     "lint:sol": "solium -d contracts/",
-    "flatten": "truffle-flattener contracts/BSCValidatorSet.sol > contracts/flattened/BSCValidatorSet.sol"
+    "flatten": "truffle-flattener contracts/BEP20Token.sol > contracts/flattened/BEP20Token.sol && truffle-flattener contracts/BEP20TransparentUpgradeableProxy.sol > contracts/flattened/BEP20TransparentUpgradeableProxy.sol"
   },
   "author": "",
   "license": "MIT",

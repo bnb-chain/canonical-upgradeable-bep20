@@ -2,36 +2,71 @@ pragma solidity 0.6.4;
 
 import "./IBEP20.sol";
 import "openzeppelin-solidity/contracts/GSN/Context.sol";
-import "openzeppelin-solidity/contracts/access/Ownable.sol";
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import "openzeppelin-solidity/contracts/proxy/Initializable.sol";
 
-contract BEP20Token is Context, IBEP20, Ownable {
+contract BEP20Token is Context, IBEP20, Initializable {
     using SafeMath for uint256;
 
     mapping (address => uint256) private _balances;
-
     mapping (address => mapping (address => uint256)) private _allowances;
-
     uint256 private _totalSupply;
-    uint8 private _decimals;
-    string private _symbol;
-    string private _name;
+
+    string public constant _name = "ABC Token";
+    string public constant _symbol = "ABC";
+    uint8 public constant _decimals = 18;
+
+    address private _owner;
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     constructor() public {
-        _name = "ABC Token";
-        _symbol = "ABC";
-        _decimals = 18;
-        _totalSupply = 10**8*1e18;
-        _balances[msg.sender] = _totalSupply;
+    }
 
+    /**
+     * @dev Throws if called by any account other than the owner.
+     */
+    modifier onlyOwner() {
+        require(_owner == _msgSender(), "Ownable: caller is not the owner");
+        _;
+    }
+
+    /**
+     * @dev sets initials supply and the owner
+     */
+    function initialize() public initializer {
+        _owner = msg.sender;
+        _totalSupply = 10**8 * 10**18;
+        _balances[msg.sender] = _totalSupply;
         emit Transfer(address(0), msg.sender, _totalSupply);
+    }
+
+    /**
+    * @dev Leaves the contract without owner. It will not be possible to call
+    * `onlyOwner` functions anymore. Can only be called by the current owner.
+    *
+    * NOTE: Renouncing ownership will leave the contract without an owner,
+    * thereby removing any functionality that is only available to the owner.
+    */
+    function renounceOwnership() public onlyOwner {
+        emit OwnershipTransferred(_owner, address(0));
+        _owner = address(0);
+    }
+
+    /**
+     * @dev Transfers ownership of the contract to a new account (`newOwner`).
+     * Can only be called by the current owner.
+     */
+    function transferOwnership(address newOwner) public onlyOwner {
+        require(newOwner != address(0), "Ownable: new owner is the zero address");
+        emit OwnershipTransferred(_owner, newOwner);
+        _owner = newOwner;
     }
 
     /**
      * @dev Returns the bep token owner.
      */
     function getOwner() external override view returns (address) {
-        return owner();
+        return _owner;
     }
 
     /**
@@ -165,6 +200,14 @@ contract BEP20Token is Context, IBEP20, Ownable {
      */
     function mint(uint256 amount) public onlyOwner returns (bool) {
         _mint(_msgSender(), amount);
+        return true;
+    }
+
+    /**
+   * @dev Burn `amount` tokens and decreasing the total supply.
+   */
+    function burn(uint256 amount) public returns (bool) {
+        _burn(_msgSender(), amount);
         return true;
     }
 
