@@ -4,7 +4,7 @@ import "openzeppelin-solidity/contracts/proxy/TransparentUpgradeableProxy.sol";
 
 contract BEP20UpgradeableProxy is TransparentUpgradeableProxy {
 
-    constructor(address logic) TransparentUpgradeableProxy(logic, msg.sender, "") public {
+    constructor(address logic, bytes memory data) TransparentUpgradeableProxy(logic, msg.sender, data) public {
 
     }
 
