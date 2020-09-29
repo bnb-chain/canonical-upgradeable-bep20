@@ -48,6 +48,6 @@ module.exports = function(deployer, network, accounts) {
       "stateMutability": "nonpayable",
       "type": "function"
     }, ["ABC Token", "ABC", 18, web3.utils.toBN(1e18), true, bep20Owner]);
-    await deployer.deploy(BEP20UpgradeableProxy, BEP20TokenImplementation.address, abiEncodeData);
+    await deployer.deploy(BEP20UpgradeableProxy, BEP20TokenImplementation.address, accounts[0], abiEncodeData);
   });
 };
