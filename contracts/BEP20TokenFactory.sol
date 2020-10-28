@@ -14,11 +14,11 @@ contract BEP20TokenFactory is Ownable{
         logicImplement = _logicImplement;
     }
 
-    function createBEP20Token(string calldata name, string calldata symbol, uint8 decimals, uint256 amount, bool mintable, address owner, address admin) external onlyOwner returns (address) {
-        BEP20UpgradeableProxy proxyToken = new BEP20UpgradeableProxy(logicImplement, admin, "");
+    function createBEP20Token(string calldata name, string calldata symbol, uint8 decimals, uint256 amount, bool mintable, address bep20Owner, address proxyAdmin) external onlyOwner returns (address) {
+        BEP20UpgradeableProxy proxyToken = new BEP20UpgradeableProxy(logicImplement, proxyAdmin, "");
 
         IProxyBEP20 token = IProxyBEP20(address(proxyToken));
-        token.initialize(name, symbol, decimals, amount, mintable, owner);
+        token.initialize(name, symbol, decimals, amount, mintable, bep20Owner);
         emit TokenCreated(address(token));
         return address(token);
     }
