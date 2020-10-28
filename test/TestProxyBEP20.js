@@ -1,19 +1,37 @@
+const truffleAssert = require('truffle-assertions');
+
 const BEP20TokenImplementation = artifacts.require("BEP20TokenImplementation");
-const BEP20UpgradeableProxy = artifacts.require("BEP20UpgradeableProxy");
+// const BEP20UpgradeableProxy = artifacts.require("BEP20UpgradeableProxy");
+const BEP20TokenFactory = artifacts.require("BEP20TokenFactory");
 
 const Web3 = require('web3');
 const web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
 
 const fs = require('fs');
 
-contract('BEP20TransparentUpgradeableProxy', (accounts) => {
+let bep20TokenAddress;
+
+contract('Upgradeable BEP20 token', (accounts) => {
+    it('Create Token', async () => {
+        const BEP20TokenFactoryInstance = await BEP20TokenFactory.deployed();
+        bep20FactoryOwner = accounts[0];
+        bep20Owner = accounts[1];
+        proxyAdmin = accounts[0];
+
+        const tx = await BEP20TokenFactoryInstance.createBEP20Token("ABC Token", "ABC", 18, web3.utils.toBN(1e18), true, bep20Owner, proxyAdmin, {from: bep20FactoryOwner});
+        truffleAssert.eventEmitted(tx, "TokenCreated",(ev) => {
+            bep20TokenAddress = ev.token;
+            return true;
+        });
+
+    });
     it('Test bep20 query methods', async () => {
         const jsonFile = "test/abi/IBEP20.json";
         const abi= JSON.parse(fs.readFileSync(jsonFile));
 
         bep20Owner = accounts[1];
 
-        const bep20 = new web3.eth.Contract(abi, BEP20UpgradeableProxy.address);
+        const bep20 = new web3.eth.Contract(abi, bep20TokenAddress);
 
         const name = await bep20.methods.name().call({from: bep20Owner});
         assert.equal(name, "ABC Token", "wrong token name");
@@ -40,7 +58,7 @@ contract('BEP20TransparentUpgradeableProxy', (accounts) => {
 
         bep20Owner = accounts[1];
 
-        const bep20 = new web3.eth.Contract(abi, BEP20UpgradeableProxy.address);
+        const bep20 = new web3.eth.Contract(abi, bep20TokenAddress);
 
         const balanceOld = await bep20.methods.balanceOf(accounts[2]).call({from: bep20Owner});
         assert.equal(balanceOld, web3.utils.toBN(0), "wrong balance");
@@ -69,7 +87,7 @@ contract('BEP20TransparentUpgradeableProxy', (accounts) => {
 
         bep20Owner = accounts[1];
 
-        const bep20 = new web3.eth.Contract(abi, BEP20UpgradeableProxy.address);
+        const bep20 = new web3.eth.Contract(abi, bep20TokenAddress);
 
         let totalSupply = await bep20.methods.totalSupply().call({from: bep20Owner});
         assert.equal(totalSupply, web3.utils.toBN(1e18), "wrong totalSupply");

@@ -13,7 +13,7 @@
     "lint:js": "eslint test/**/*.js",
     "lint:sol:fix": "solium -d contracts/ --fix",
     "lint:sol": "solium -d contracts/",
-    "flatten": "truffle-flattener contracts/BEP20TokenImplementation.sol > contracts/flattened/BEP20TokenImplementation.sol && truffle-flattener contracts/BEP20UpgradeableProxy.sol > contracts/flattened/BEP20UpgradeableProxy.sol"
+    "flatten": "truffle-flattener contracts/BEP20TokenFactory.sol > contracts/flattened/BEP20TokenFactory.sol && truffle-flattener contracts/BEP20TokenImplementation.sol > contracts/flattened/BEP20TokenImplementation.sol && truffle-flattener contracts/BEP20UpgradeableProxy.sol > contracts/flattened/BEP20UpgradeableProxy.sol"
   },
   "author": "",
   "license": "MIT",
@@ -33,6 +33,8 @@
     "elliptic": ">=6.5.3",
     "minimist": ">=1.2.3",
     "mem": ">=4.0.0",
-    "lodash": ">=4.17.19"
+    "lodash": ">=4.17.19",
+    "node-fetch": ">=2.6.1",
+    "yargs-parser": ">=13.1.2"
   }
 }
