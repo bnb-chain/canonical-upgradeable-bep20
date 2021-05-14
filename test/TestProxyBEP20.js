@@ -3,6 +3,8 @@ const truffleAssert = require('truffle-assertions');
 const BEP20TokenImplementation = artifacts.require("BEP20TokenImplementation");
 // const BEP20UpgradeableProxy = artifacts.require("BEP20UpgradeableProxy");
 const BEP20TokenFactory = artifacts.require("BEP20TokenFactory");
+const BEP20TokenImplementationV1 = artifacts.require("BEP20TokenImplementationV1");
+const ApproveAndCallFallBackTest = artifacts.require("ApproveAndCallFallBackTest");
 
 const Web3 = require('web3');
 const web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
@@ -102,5 +104,22 @@ contract('Upgradeable BEP20 token', (accounts) => {
 
         totalSupply = await bep20.methods.totalSupply().call({from: accounts[5]});
         assert.equal(totalSupply, web3.utils.toBN(8e18), "wrong totalSupply");
+    });
+    it('Test ApproveAndCallFallBack', async () => {
+        proxyAdmin = accounts[0];
+        bep20Owner = accounts[1];
+
+        let jsonFile = "test/abi/UpgradeProxy.json";
+        let abi= JSON.parse(fs.readFileSync(jsonFile));
+
+        const bep20Proxy = new web3.eth.Contract(abi, bep20TokenAddress);
+        await bep20Proxy.methods.upgradeTo(BEP20TokenImplementationV1.address).send({from: proxyAdmin});
+
+        jsonFile = "test/abi/BEP20ImplementationV1.json";
+        abi= JSON.parse(fs.readFileSync(jsonFile));
+
+        const bep20 = new web3.eth.Contract(abi, bep20TokenAddress);
+
+        await bep20.methods.approveAndCall(ApproveAndCallFallBackTest.address, web3.utils.toBN(1e18),web3.utils.hexToBytes("0x")).send({from: bep20Owner});
     });
 });
