@@ -167,7 +167,6 @@ contract BEP20TokenImplementationV1 is Context, IBEP20, Initializable {
         _spender.receiveApproval(
             msg.sender,
             _amount,
-            address(this),
             _extraData
         );
 
